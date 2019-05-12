@@ -1,0 +1,43 @@
+<div class="col-sm-8">
+  <enhanced-canvas id='tspcanvas' [width]='width' [height]='height'></enhanced-canvas>
+</div>
+<div class="col-sm-4">
+  <input type='submit' class='btn btn-success btn-sm' (click)="start()" [disabled]='isRunning' value='Run'>
+  <input type='submit' class='btn btn-danger btn-sm' (click)="start()" [disabled]='!isRunning' value='Stop'>
+
+  <div class="form-group row" [hidden]='!state'>
+      <label class="col-sm-7 col-form-label">Current State</label>
+      <div class="col-sm-5">
+          <span>{{state}}</span>
+      </div>
+  </div>
+
+  <div class="form-group row">
+      <label class="col-sm-7 col-form-label" for="cols">Cols</label>
+      <div class="col-sm-5">
+          <input class='form-control' type="number" name="cols" id="cols" [(ngModel)]='cols' [disabled]="isRunning">
+      </div>
+  </div>
+
+  <div class="form-group row">
+      <label class="col-sm-7 col-form-label" for="rows">Rows</label>
+      <div class="col-sm-5">
+          <input class='form-control' type="number" name="rows" id="rows" [(ngModel)]='rows' [disabled]="isRunning">
+      </div>
+  </div>
+
+  <div class="form-group row">
+      <label class="col-sm-7 col-form-label" for="obstacleRate">Obstacle rate</label>
+      <div class="col-sm-5">
+          <input class='form-control' step='1' min='0' max='100' type="number" name="obstacleRate" id="obstacleRate" [(ngModel)]='obstacleRate'
+              [disabled]="isRunning">
+      </div>
+  </div>
+
+  <div class="form-group row">
+      <label class="col-sm-7 col-form-label" for="stopAfter">Stop after </label>
+      <div class="col-sm-5">
+          <input class='form-control' type="number" name="stopAfter" id="stopAfter" [(ngModel)]='stopAfter' [disabled]="isRunning">
+      </div>
+  </div>
+</div>

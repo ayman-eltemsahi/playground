@@ -1,0 +1,53 @@
+<div class="col-sm-8">
+    <enhanced-canvas id='tspcanvas' [width]='width' [height]='height'></enhanced-canvas>
+</div>
+<div class="col-sm-4">
+    <input type='submit' class='btn btn-success btn-sm' (click)="start()" [disabled]='isRunning' value='Run'>
+    <input type='submit' class='btn btn-danger btn-sm' (click)="start()" [disabled]='!isRunning' value='Stop'>
+
+
+    <!-- <span>{{mutationCount}}</span> -->
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label">Current Generation</label>
+        <div class="col-sm-5">
+            <span>{{currentGeneration}}</span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label">Best value at Gen</label>
+        <div class="col-sm-5">
+            <span>{{bestGeneration}}</span>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label" for="populationSize">Population Size</label>
+        <div class="col-sm-5">
+            <input class='form-control' type="number" name="populationSize" id="populationSize" [(ngModel)]='populationSize' [disabled]="isRunning">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label" for="numberOfCities">Number of Cities</label>
+        <div class="col-sm-5">
+            <input class='form-control' type="number" name="numberOfCities" id="numberOfCities" [(ngModel)]='numberOfCities' [disabled]="isRunning">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label" for="mutationRate">Mutation Rate </label>
+        <div class="col-sm-5">
+            <input class='form-control' step='0.01' min='0' max='1' type="number" name="mutationRate" id="mutationRate" [(ngModel)]='mutationRate'
+                [disabled]="isRunning">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label" for="stopAfter">Stop after </label>
+        <div class="col-sm-5">
+            <input class='form-control' type="number" name="stopAfter" id="stopAfter" [(ngModel)]='stopAfter' [disabled]="isRunning">
+        </div>
+    </div>
+</div>

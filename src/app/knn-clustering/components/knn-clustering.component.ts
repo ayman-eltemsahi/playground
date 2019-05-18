@@ -28,19 +28,20 @@ export class KnnClusteringMainComponent implements AfterViewInit {
             cycle: 0
         };
 
-    points: Point[] = [];
-    clusters: Cluster[] = [];
-
     width: number = 875;
     height: number = 875;
 
-    private changed: boolean = false;
+    isRunning: boolean = false;
+    finished: boolean = false;
+
+    private clusters: Cluster[] = [];
+    private points: Point[] = [];
 
     constructor(private title: Title,
         private rnd: RandomService,
         private util: SharedUtilityService
     ) {
-        this.title.setTitle("Knn Clustering");
+        this.title.setTitle("KNN Clustering");
     }
 
     ngAfterViewInit() {
@@ -52,23 +53,40 @@ export class KnnClusteringMainComponent implements AfterViewInit {
     }
 
     initialize() {
-        for (let i = 0; i < this.input.points; i++) {
-            this.points[i] = new Point(this.rnd.next(10, this.width - 10), this.rnd.next(10, this.height - 10));
-        }
+        this.isRunning = true;
+        this.finished = false;
+        this.input.cycle = 0;
+        this.points = this.rnd.randomPoints(this.input.points, 10, this.width - 10, 10, this.height - 10);
 
         this.clusters = [];
-        let cur = 0;
         for (let i = 0; i < this.input.clusters; i++) {
-            this.clusters[i] = new Cluster(this.rnd.getRandomColor());
-            this.clusters[i].center = new Point(this.rnd.next(10, this.width - 10), this.rnd.next(10, this.height - 10));
-            for (let j = 0; j < this.input.points / this.input.clusters && cur < this.input.points; j++)
-                this.clusters[i].points[j] = this.points[cur++];
+            this.clusters[i] = new Cluster(this.rnd.randomColor());
+            this.clusters[i].center = this.rnd.randomPoint(10, this.width - 10, 10, this.height - 10);
         }
+        this.evaluatePoints();
     }
 
     start() {
         this.initialize();
         this.run();
+    }
+
+    run() {
+        this.input.cycle++;
+        this.draw();
+        this.isRunning = false;
+        this.clusters.forEach(cluster => {
+            const diff = this.calculateCenter(cluster);
+            if (diff > 0.1) this.isRunning = true;
+        });
+        this.evaluatePoints();
+        this.draw();
+
+        if (this.isRunning) {
+            setTimeout(() => this.run(), this.input.animationSpeed);
+        } else {
+            this.finish();
+        }
     }
 
     calculateCenter(cluster: Cluster) {
@@ -90,29 +108,17 @@ export class KnnClusteringMainComponent implements AfterViewInit {
         return diff;
     }
 
-
-    run() {
-        this.changed = false;
-        this.clusters.forEach(cluster => {
-            const diff = this.calculateCenter(cluster);
-            if (diff > 0.1) this.changed = true;
-        });
-        this.reevaluatePoints();
-        this.draw();
-
-        if (this.changed) {
-            setTimeout(() => this.run(), 100);
-        } else {
-            alert('done');
-        }
-    }
-
-    reevaluatePoints() {
+    evaluatePoints() {
         this.clusters.forEach(cluster => cluster.points = []);
         this.points.forEach(point => {
             const cluster = this.getClusterWithMinDistance(point);
             cluster.addPoint(point);
         });
+    }
+
+    finish() {
+        this.isRunning = false;
+        this.finished = true;
     }
 
     private getClusterWithMinDistance(point: Point): Cluster {
@@ -133,9 +139,9 @@ export class KnnClusteringMainComponent implements AfterViewInit {
         this.canvas.clear();
         this.canvas.font = '14px serif';
 
-        this.points.forEach(city => {
+        this.points.forEach(point => {
             this.canvas.strokeStyle = 'green';
-            this.canvas.circle(city.x, city.y, 2);
+            this.canvas.circle(point.x, point.y, 2);
         });
 
         this.canvas.strokeStyle = 'blue';

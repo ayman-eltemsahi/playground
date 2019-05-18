@@ -1,23 +1,17 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { NotImplementedError } from '../../errors/index';
-import { Point, CanvasDrawingMode, Shape } from '../../data-models/';
+import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Point, Shape } from '../../data-models/';
 
 @Component({
     selector: 'enhanced-canvas',
     templateUrl: 'enhanced-canvas.component.html',
-    styles: [
-        `
-        canvas {
-            border : 1px solid #ccc;
-        }
-        `
-    ]
+    styleUrls: ['enhanced-canvas.component.html']
 })
 export class EnhancedCanvasComponent implements OnInit, OnDestroy {
 
     @Input() id: string;
     @Input("width") originalWidth: number;
     @Input("height") originalHeight: number;
+    @ViewChild('canvas') canvas: ElementRef;
 
     get width() { return this.actualWidth; }
     get height() { return this.actualHeight; }
@@ -28,15 +22,12 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         return this.actualHeight / this.originalHeight;
     }
 
-    private canvas: any;
     private canvasParent: any;
     private ctx: any;
 
     private actualWidth: any;
     private actualHeight: any;
-    private reDrawAfterResize: boolean;
 
-    private canvasMode: CanvasDrawingMode;
     private intervalBetweenWithUpdates: number;
     private preventResizeChange: boolean;
     private haveMemory: boolean;
@@ -46,9 +37,8 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     private images = [];
 
     constructor() {
-        this.canvasMode = CanvasDrawingMode.RedrawImmediatelyAfterResize;
         this.intervalBetweenWithUpdates = 10;
-        this.haveMemory = false;
+        this.haveMemory = true;
         this.preventResizeChange = true;
         setTimeout(() => this.preventResizeChange = false, 100);
     }
@@ -74,8 +64,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         this.canvasParent = document.querySelector('.enhanced-canvas');
 
         // the canvas element
-        this.canvas = document.querySelector('.enhanced-canvas canvas');
-        this.ctx = this.canvas.getContext("2d");
+        this.ctx = this.canvas.nativeElement.getContext("2d");
 
         this.resizeHandler = () => this.windowResized();
         window.addEventListener('resize', this.resizeHandler);
@@ -88,14 +77,11 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     }
 
     windowResized() {
-        if (this.canvasMode === CanvasDrawingMode.WaitForActualPaintToRedrawAfterResize) {
-            this.reDrawAfterResize = true;
-        } else {
-            this.enforceResizeChange();
-        }
+        this.resizeCanvas();
+        this.enforceResizeChange();
     }
 
-    rectangle(x, y, size) {
+    rectangle(x: number, y: number, size: number) {
         if (this.haveMemory) {
             this.images.push({
                 type: Shape.Rectangle,
@@ -106,11 +92,10 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
                 strokeStyle: this.ctx.strokeStyle,
             });
         }
-        this.preDraw();
         this.ctx.fillRect(x * size * this.xFactor, y * size, size, size);
     }
 
-    circle(x, y, r) {
+    circle(x: number, y: number, r: number) {
         if (this.haveMemory) {
             this.images.push({
                 type: Shape.Circle,
@@ -136,7 +121,6 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
                 strokeStyle: this.ctx.strokeStyle,
             });
         }
-        this.preDraw();
         if (!points) {
             throw new TypeError("[points] is null or undefined in canvas.polygon");
         }
@@ -158,26 +142,26 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
 
     clear() {
         this.images = [];
-        this.preDraw();
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     }
 
-    private preDraw() {
-        this.enforceResizeChange();
+    private resizeCanvas() {
+        const newWidth = Number.parseInt(window.getComputedStyle(this.canvasParent).width);
+        if (this.actualWidth === newWidth) return;
+
+        this.canvas.nativeElement.width = newWidth;
+        this.actualWidth = newWidth;
     }
 
     private enforceResizeChange() {
-        console.log(this.preventResizeChange, this.images.length);
-        if (this.preventResizeChange || !this.images.length) return;
-        const newWidth = Number.parseInt(window.getComputedStyle(this.canvasParent).width);
-        alert(newWidth + " " + this.actualWidth);
-        if (this.actualWidth === newWidth) return;
+        if (!this.images.length) return;
+
+        if (this.preventResizeChange) {
+            setTimeout(() => this.enforceResizeChange(), this.intervalBetweenWithUpdates);
+            return;
+        }
 
         this.preventResizeChange = true;
-
-        this.reDrawAfterResize = false;
-        this.canvas.width = newWidth;
-        this.actualWidth = newWidth;
 
         setTimeout(() => {
             const temp = this.images;

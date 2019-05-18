@@ -5,8 +5,7 @@ import { RandomService } from '../../../shared/services/random.service';
 
 @Component({
     selector: 'app-astar-main',
-    templateUrl: './astar-main.component.html',
-    styleUrls: ['./astar-main.component.css']
+    templateUrl: './astar-main.component.html'
 })
 export class AstarMainComponent implements OnInit {
     @ViewChild(EnhancedCanvasComponent) canvas: EnhancedCanvasComponent;
@@ -30,7 +29,7 @@ export class AstarMainComponent implements OnInit {
 
         setTimeout(() => {
             this.initialize();
-        }, 1000);
+        }, 2);
     }
 
     start() {
@@ -59,7 +58,7 @@ export class AstarMainComponent implements OnInit {
 
         for (let i = 0; i < this.cols; i++) {
             for (let j = 0; j < this.rows; j++) {
-                this.addNeighbours(this.grid[i][j], this.grid);
+                this.addNeighbors(this.grid[i][j], this.grid);
                 this.grid[i][j].h = this.euclidean(this.grid[i][j], this.endCell);
             }
         }
@@ -79,12 +78,10 @@ export class AstarMainComponent implements OnInit {
                         if (this.grid[i - 1][j]) this.grid[i - 1][j].isObstacle = true;
                         if (this.grid[i - 2][j]) this.grid[i - 2][j].isObstacle = true;
                         if (this.grid[i - 3][j]) this.grid[i - 3][j].isObstacle = true;
-                        // if (this.grid[i - 4][j]) this.grid[i - 4][j].isObstacle = true;
                     } else {
                         if (this.grid[i][j - 1]) this.grid[i][j - 1].isObstacle = true;
                         if (this.grid[i][j - 2]) this.grid[i][j - 2].isObstacle = true;
                         if (this.grid[i][j - 3]) this.grid[i][j - 3].isObstacle = true;
-                        // if (this.grid[i][j - 4]) this.grid[i][j - 4].isObstacle = true;
                     }
                 }
             }
@@ -117,25 +114,25 @@ export class AstarMainComponent implements OnInit {
         this.openSet = this.openSet.filter(x => x !== current);
         current.isOpen = false;
 
-        let neighbours = current.neighbours;
-        for (let i = 0; i < neighbours.length; i++) {
-            let neighbour = neighbours[i];
+        let neighbors = current.neighbors;
+        for (let i = 0; i < neighbors.length; i++) {
+            let neighbor = neighbors[i];
 
-            if (!neighbour.isClosed) {
+            if (!neighbor.isClosed) {
                 let tempg = current.g + 1;
 
-                if (neighbour.isOpen) {
-                    if (tempg < neighbour.g) {
-                        neighbour.g = tempg;
-                        neighbour.cameFrom = current;
-                        neighbour.f = neighbour.g + neighbour.h;
+                if (neighbor.isOpen) {
+                    if (tempg < neighbor.g) {
+                        neighbor.g = tempg;
+                        neighbor.cameFrom = current;
+                        neighbor.f = neighbor.g + neighbor.h;
                     }
                 } else {
-                    neighbour.g = tempg;
-                    neighbour.cameFrom = current;
-                    neighbour.f = neighbour.g + neighbour.h;
-                    neighbour.isOpen = true;
-                    this.openSet.push(neighbour);
+                    neighbor.g = tempg;
+                    neighbor.cameFrom = current;
+                    neighbor.f = neighbor.g + neighbor.h;
+                    neighbor.isOpen = true;
+                    this.openSet.push(neighbor);
                 }
             }
         }
@@ -148,7 +145,7 @@ export class AstarMainComponent implements OnInit {
     }
 
 
-    addNeighbours(cell: Cell, grid) {
+    addNeighbors(cell: Cell, grid) {
         this.add(cell.x - 1, cell.y, cell);
         this.add(cell.x + 1, cell.y, cell);
         this.add(cell.x, cell.y - 1, cell);
@@ -164,10 +161,8 @@ export class AstarMainComponent implements OnInit {
     };
 
     add(a: number, b: number, cell: Cell) {
-        if (this.valid(a, b) && !this.grid[a][b].isObstacle) cell.neighbours.push(this.grid[a][b]);
+        if (this.valid(a, b) && !this.grid[a][b].isObstacle) cell.neighbors.push(this.grid[a][b]);
     }
-
-    drawingSurface = [];
 
     draw(current: Cell = void 0) {
         let i1, j1, i2, j2;
@@ -195,31 +190,27 @@ export class AstarMainComponent implements OnInit {
         }
     }
 
-    drawPath(node, color) {
+    drawPath(node: Cell, color: string) {
         while (node) {
             this.drawRect(color, node.x, node.y);
             node = node.cameFrom;
         }
     }
 
-    drawRect(color, i, j) {
+    drawRect(color: string, i: number, j: number) {
         this.canvas.fillStyle = color;
         this.canvas.rectangle(i, j, Math.min(this.width, this.height) / this.cols);
     }
 
-    calculateHeuristic(fn, endCell) {
-        return fn(this, endCell);
-    }
-
-    valid(x, y) {
+    valid(x: number, y: number) {
         return x >= 0 && y >= 0 && x < this.cols && y < this.rows;
     }
 
-    euclidean(a, b) {
+    euclidean(a: Cell, b: Cell) {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
 
-    manhattan(a, b) {
+    manhattan(a: { x: number; y: number; }, b: { x: number; y: number; }) {
         return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
     }
 }

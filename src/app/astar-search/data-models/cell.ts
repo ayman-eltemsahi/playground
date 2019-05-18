@@ -6,7 +6,7 @@ export class Cell {
     g: number;
     h: number;
 
-    neighbours: any;
+    neighbors: any;
     cameFrom: any;
     isClosed: boolean;
     isOpen: boolean;
@@ -23,6 +23,6 @@ export class Cell {
         this.isOpen = false;
         this.isTarget = false;
         this.isObstacle = false;
-        this.neighbours = [];
+        this.neighbors = [];
     }
 }

@@ -1,5 +1,5 @@
 export let KNNClusteringConfiguration = {
-    numberOfPoints: 500,
-    numberOfClusters: 10,
+    numberOfPoints: 1000,
+    numberOfClusters: 20,
     animationSpeed: 10,
 }

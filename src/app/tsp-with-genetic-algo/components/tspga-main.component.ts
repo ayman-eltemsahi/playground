@@ -1,23 +1,24 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import { TSPGAConfiguration } from '../configuration/tsp-ga.configuration';
-import { RandomService } from '../../shared/services/random.service';
+import { Point } from '../../shared/data-models';
 import { Population, City, Gene, Chromosome } from '../data-models';
 import { UtilityService } from '../services/utility.service';
-import { SelectionService } from '../services/selection.service';
-import { DistanceService } from '../services/distance.service';
-import { EnhancedCanvasComponent } from '../../shared/components/enhanced-canvas/enhanced-canvas.component';
-import { MutationService } from '../services/mutation.service';
 import { FitnessService } from '../services/fitness.service';
+import { MutationService } from '../services/mutation.service';
+import { DistanceService } from '../services/distance.service';
 import { CrossOverService } from '../services/crossover.service';
-import { Point } from '../../shared/data-models';
+import { SelectionService } from '../services/selection.service';
+import { RandomService } from '../../shared/services/random.service';
+import { LoopComponent } from 'src/app/shared/components/loop/loop.component';
+import { TSPGAConfiguration as config } from '../configuration/tsp-ga.configuration';
+import { EnhancedCanvasComponent } from '../../shared/components/enhanced-canvas/enhanced-canvas.component';
 
 @Component({
     selector: 'tsp-ga',
     templateUrl: 'tspga-main.component.html'
 })
-export class TSPGAMainComponent implements AfterViewInit {
+export class TSPGAMainComponent extends LoopComponent {
     @ViewChild(EnhancedCanvasComponent) canvas: EnhancedCanvasComponent;
 
     cities: City[];
@@ -38,7 +39,6 @@ export class TSPGAMainComponent implements AfterViewInit {
     bestLocalFitness: number;
     currentGeneration: number = 0;
     lastFitnessCount: number;
-    isRunning: boolean = false;
 
     constructor(private title: Title,
         private crossOver: CrossOverService,
@@ -49,40 +49,12 @@ export class TSPGAMainComponent implements AfterViewInit {
         private selection: SelectionService,
         private util: UtilityService
     ) {
+        super(true);
+        this.animationSpeed = 0;
         this.title.setTitle("TSP with Genetic Algorithm");
-        this.populationSize = TSPGAConfiguration.populationSize;
-        this.numberOfCities = TSPGAConfiguration.numberOfCities;
-        this.mutationRate = TSPGAConfiguration.mutationRate;
-    }
-
-    ngAfterViewInit() {
-        this.canvas.clear();
-        setTimeout(() => {
-            this.start();
-        }, 2);
-    }
-
-    start() {
-        if (this.isRunning) {
-            this.isRunning = false;
-        } else {
-            this.isRunning = true;
-            this.initialize();
-
-            let anonFunc = () => {
-                this.run();
-                setTimeout(() => {
-                    if (this.isRunning) anonFunc();
-                    else this.isRunning = false;
-                }, 1);
-            }
-            anonFunc();
-        }
-    }
-
-    run() {
-        this.calculateFitness();
-        this.runGeneration();
+        this.populationSize = config.populationSize;
+        this.numberOfCities = config.numberOfCities;
+        this.mutationRate = config.mutationRate;
     }
 
     initialize() {
@@ -115,10 +87,15 @@ export class TSPGAMainComponent implements AfterViewInit {
         }
     }
 
-    runGeneration() {
+    run() {
+        this.calculateFitness();
+        this.runGeneration();
+    }
+
+    private runGeneration() {
         this.currentGeneration++;
 
-        let newPopulation = new Population();
+        const newPopulation = new Population();
         if (this.bestGene) {
             newPopulation.push(this.bestGene.clone());
 
@@ -132,9 +109,9 @@ export class TSPGAMainComponent implements AfterViewInit {
         }
 
         while (newPopulation.length < this.populationSize) {
-            let first = this.selection.tournament(this.population);
-            let second = this.selection.tournament(this.population);
-            let child = this.crossOver.getChild(first, second);
+            const first = this.selection.tournament(this.population);
+            const second = this.selection.tournament(this.population);
+            const child = this.crossOver.getChild(first, second);
 
             this.mutation.mutate(child);
             newPopulation.push(child);
@@ -143,8 +120,8 @@ export class TSPGAMainComponent implements AfterViewInit {
         this.population = newPopulation;
     }
 
-    calculateFitness() {
-        this.population.chromosomes.map(ch => {
+    private calculateFitness() {
+        this.population.chromosomes.forEach(ch => {
             ch.fitness = this.fitness.calculateFitness(ch);
         });
 
@@ -159,7 +136,7 @@ export class TSPGAMainComponent implements AfterViewInit {
         this.checkGenerationResults();
     }
 
-    checkGenerationResults() {
+    private checkGenerationResults() {
         if (this.bestFitness < this.bestLocalFitness) {
             this.bestFitness = this.bestLocalFitness;
             this.bestGene = this.bestLocalGene;
@@ -175,12 +152,12 @@ export class TSPGAMainComponent implements AfterViewInit {
         }
     }
 
-    draw(cities: City[], order: number[]) {
+    private draw(cities: City[], order: number[]) {
         this.canvas.clear();
         this.canvas.font = '14px serif';
 
-        cities.map(city => {
-            this.canvas.strokeStyle = 'green';
+        this.canvas.strokeStyle = 'green';
+        cities.forEach(city => {
             this.canvas.circle(city.x, city.y, 2);
         });
 

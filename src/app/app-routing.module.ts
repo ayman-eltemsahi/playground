@@ -14,6 +14,10 @@ const routes: Routes = [
   {
     path: 'astar',
     loadChildren: './astar-search/astar-search.module#AstarSearchModule'
+  },
+  {
+    path: 'knn-clustering',
+    loadChildren: './knn-clustering/knn-clustering.module#KNNClusteringModule'
   }
 ];
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { NotImplementedError } from '../../errors/index';
 import { Point, CanvasDrawingMode, Shape } from '../../data-models/';
 
@@ -13,7 +13,7 @@ import { Point, CanvasDrawingMode, Shape } from '../../data-models/';
         `
     ]
 })
-export class EnhancedCanvasComponent implements OnInit {
+export class EnhancedCanvasComponent implements OnInit, OnDestroy {
 
     @Input() id: string;
     @Input("width") originalWidth: number;
@@ -41,10 +41,12 @@ export class EnhancedCanvasComponent implements OnInit {
     private preventResizeChange: boolean;
     private haveMemory: boolean;
 
+    private resizeHandler;
+
     private images = [];
 
     constructor() {
-        this.canvasMode = CanvasDrawingMode.RedrawImmediatlyAfterResize;
+        this.canvasMode = CanvasDrawingMode.RedrawImmediatelyAfterResize;
         this.intervalBetweenWithUpdates = 10;
         this.haveMemory = false;
         this.preventResizeChange = true;
@@ -55,12 +57,16 @@ export class EnhancedCanvasComponent implements OnInit {
         this.ctx.font = font;
     }
 
-    set fillStyle(color: string) {
-        this.ctx.fillStyle = color;
+    set fillStyle(style: string) {
+        this.ctx.fillStyle = style;
     }
 
-    set strokeStyle(color: string) {
-        this.ctx.strokeStyle = color;
+    set lineWidth(width: number) {
+        this.ctx.lineWidth = width;
+    }
+
+    set strokeStyle(style: string) {
+        this.ctx.strokeStyle = style;
     }
 
     ngOnInit() {
@@ -70,7 +76,9 @@ export class EnhancedCanvasComponent implements OnInit {
         // the canvas element
         this.canvas = document.querySelector('.enhanced-canvas canvas');
         this.ctx = this.canvas.getContext("2d");
-        // $(window).resize(this.windowResized.bind(this));
+
+        this.resizeHandler = () => this.windowResized();
+        window.addEventListener('resize', this.resizeHandler);
 
         // set the width
         this.actualWidth = Number.parseInt(window.getComputedStyle(this.canvasParent).width);
@@ -133,12 +141,11 @@ export class EnhancedCanvasComponent implements OnInit {
             throw new TypeError("[points] is null or undefined in canvas.polygon");
         }
 
-        let n = points.length;
         this.ctx.beginPath();
 
         this.ctx.moveTo(points[0].x * this.xFactor, points[0].y);
 
-        points.map(p => {
+        points.forEach(p => {
             this.ctx.lineTo(p.x * this.xFactor, p.y);
         });
 
@@ -160,9 +167,12 @@ export class EnhancedCanvasComponent implements OnInit {
     }
 
     private enforceResizeChange() {
+        console.log(this.preventResizeChange, this.images.length);
         if (this.preventResizeChange || !this.images.length) return;
-        var newWidth = this.canvasParent.width();
-        if (this.actualWidth == newWidth) return;
+        const newWidth = Number.parseInt(window.getComputedStyle(this.canvasParent).width);
+        alert(newWidth + " " + this.actualWidth);
+        if (this.actualWidth === newWidth) return;
+
         this.preventResizeChange = true;
 
         this.reDrawAfterResize = false;
@@ -170,22 +180,22 @@ export class EnhancedCanvasComponent implements OnInit {
         this.actualWidth = newWidth;
 
         setTimeout(() => {
-            let reserve = this.images;
+            const temp = this.images;
             this.images = [];
-            reserve.map(x => {
+            temp.forEach(item => {
 
-                this.fillStyle = x.fillStyle;
-                this.strokeStyle = x.strokeStyle;
+                this.fillStyle = item.fillStyle;
+                this.strokeStyle = item.strokeStyle;
 
-                switch (x.type) {
+                switch (item.type) {
                     case Shape.Circle:
-                        this.circle(x.x, x.y, x.r);
+                        this.circle(item.x, item.y, item.r);
                         break;
                     case Shape.Rectangle:
-                        this.rectangle(x.x, x.y, x.size);
+                        this.rectangle(item.x, item.y, item.size);
                         break;
                     case Shape.Polygon:
-                        this.polygon(x.points, x.closePolygon);
+                        this.polygon(item.points, item.closePolygon);
                         break;
 
                     default:
@@ -193,11 +203,15 @@ export class EnhancedCanvasComponent implements OnInit {
                 }
             });
 
-            this.images = reserve;
+            this.images = temp;
 
             setTimeout(() => {
                 this.preventResizeChange = false;
             }, this.intervalBetweenWithUpdates);
         }, 0);
+    }
+
+    ngOnDestroy() {
+        window.removeEventListener('resize', this.resizeHandler);
     }
 }

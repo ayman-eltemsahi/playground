@@ -6,8 +6,7 @@ export const tspGARoutes: Routes = [
     {
         path: '',
         component: TSPGAMainComponent,
-        pathMatch: 'full',
-        // children: []
+        pathMatch: 'full'
     }
 ];
 export const TSPGARouting: ModuleWithProviders = RouterModule.forChild(tspGARoutes);

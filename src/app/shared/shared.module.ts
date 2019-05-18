@@ -3,9 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { RandomService } from './services/random.service';
 import { EnhancedCanvasComponent } from './components/enhanced-canvas/enhanced-canvas.component';
+import { SharedUtilityService } from './services/shared-utility.service';
 
 let providers = [
-    RandomService
+    RandomService,
+    SharedUtilityService
 ];
 
 let declarations = [

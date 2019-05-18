@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+const HEX = '0123456789ABCDEF';
+
 @Injectable()
 export class RandomService {
     private m_w: number;
@@ -36,6 +38,14 @@ export class RandomService {
     public oneIn(n: number): boolean {
         n = n || 0;
         return this.getNextMinMax(0, n) === 0;
+    }
+
+    public getRandomColor() {
+        let color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += HEX[this.next(0, 16)];
+        }
+        return color;
     }
 
     private getNextRandom(): number {

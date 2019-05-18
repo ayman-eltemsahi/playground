@@ -1,4 +1,4 @@
 export enum CanvasDrawingMode {
-    RedrawImmediatlyAfterResize,
+    RedrawImmediatelyAfterResize,
     WaitForActualPaintToRedrawAfterResize
 }

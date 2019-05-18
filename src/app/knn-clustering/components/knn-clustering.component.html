@@ -1,0 +1,41 @@
+<div class="col-sm-8">
+    <enhanced-canvas id='knn-clustering-canvas' [width]='width' [height]='height'></enhanced-canvas>
+</div>
+<div class="col-sm-4">
+    <input type='submit' class='btn btn-success btn-sm' (click)="start()" [disabled]='isRunning' value='Run'>
+    <input type='submit' class='btn btn-danger btn-sm' (click)="start()" [disabled]='!isRunning' value='Stop'>
+
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label">Current cycle</label>
+        <div class="col-sm-5">
+            <span>{{input.cycle}}</span>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label" for="noOfClusters">No of Clusters:</label>
+        <div class="col-sm-5">
+            <input class='form-control w-80' type="number" name="noOfClusters" id="noOfClusters"
+                [(ngModel)]='input.clusters' [disabled]="isRunning">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label" for="numberOfPoints">Number of Cities</label>
+        <div class="col-sm-5">
+            <input class='form-control w-80' type="number" name="numberOfPoints" id="numberOfPoints"
+                [(ngModel)]='input.points' [disabled]="isRunning">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-7 col-form-label" for="animationSpeed">Animation Speed:</label>
+        <div class="col-sm-5">
+            <input class='form-control w-80' type="number" name="animationSpeed" id="animationSpeed"
+                [(ngModel)]='input.animationSpeed' [disabled]="isRunning">
+        </div>
+    </div>
+
+</div>

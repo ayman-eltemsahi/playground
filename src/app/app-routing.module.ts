@@ -9,7 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'tsp-ga',
-    loadChildren: './tsp-with-genetic-algo-module/tsp-with-genetic-algo.module#TSPGAModule'
+    loadChildren: './tsp-with-genetic-algo/tsp-with-genetic-algo.module#TSPGAModule'
   },
   {
     path: 'astar',

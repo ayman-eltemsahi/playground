@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LinkedListService } from './linkedlist.data-structure';
+import { LinkedListService } from './linked-list.data-structure';
 import { MutationService } from './mutation.service';
 import { Chromosome, Gene } from '../data-models/index';
 import { RandomService } from '../../shared/services/random.service';

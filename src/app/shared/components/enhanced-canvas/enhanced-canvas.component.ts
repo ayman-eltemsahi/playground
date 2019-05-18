@@ -12,6 +12,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     @Input("width") originalWidth: number;
     @Input("height") originalHeight: number;
     @ViewChild('canvas') canvas: ElementRef;
+    @ViewChild('canvasParent') canvasParent: ElementRef;
 
     get width() { return this.actualWidth; }
     get height() { return this.actualHeight; }
@@ -22,7 +23,6 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         return this.actualHeight / this.originalHeight;
     }
 
-    private canvasParent: any;
     private ctx: any;
 
     private actualWidth: any;
@@ -60,17 +60,13 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // the element containing the canvas element
-        this.canvasParent = document.querySelector('.enhanced-canvas');
-
-        // the canvas element
         this.ctx = this.canvas.nativeElement.getContext("2d");
 
         this.resizeHandler = () => this.windowResized();
         window.addEventListener('resize', this.resizeHandler);
 
         // set the width
-        this.actualWidth = Number.parseInt(window.getComputedStyle(this.canvasParent).width);
+        this.actualWidth = Number.parseInt(window.getComputedStyle(this.canvasParent.nativeElement).width);
 
         // set the height
         this.actualHeight = this.originalHeight;
@@ -111,12 +107,12 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         this.ctx.stroke();
     }
 
-    polygon(points: Point[], closePolygon: boolean = false) {
+    polygon(points: Point[], opts: { closePolygon: boolean } = { closePolygon: false }) {
         if (this.haveMemory) {
             this.images.push({
                 type: Shape.Polygon,
                 points: points,
-                closePolygon: closePolygon,
+                closePolygon: opts.closePolygon,
                 fillStyle: this.ctx.fillStyle,
                 strokeStyle: this.ctx.strokeStyle,
             });
@@ -133,7 +129,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
             this.ctx.lineTo(p.x * this.xFactor, p.y);
         });
 
-        if (closePolygon) {
+        if (opts.closePolygon) {
             this.ctx.lineTo(points[0].x * this.xFactor, points[0].y);
         }
 
@@ -146,7 +142,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     }
 
     private resizeCanvas() {
-        const newWidth = Number.parseInt(window.getComputedStyle(this.canvasParent).width);
+        const newWidth = Number.parseInt(window.getComputedStyle(this.canvasParent.nativeElement).width);
         if (this.actualWidth === newWidth) return;
 
         this.canvas.nativeElement.width = newWidth;
@@ -179,7 +175,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
                         this.rectangle(item.x, item.y, item.size);
                         break;
                     case Shape.Polygon:
-                        this.polygon(item.points, item.closePolygon);
+                        this.polygon(item.points, { closePolygon: item.closePolygon });
                         break;
 
                     default:

@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { TSPGAMainComponent } from './components/tspgamain.component';
+import { TSPGAMainComponent } from './components/tspga-main.component';
 import { TSPGARouting } from './tsp-with-genetic-algo.routes';
 import { SharedModule } from '../shared/shared.module';
-import { LinkedListService } from './services/linkedlist.data-structure';
+import { LinkedListService } from './services/linked-list.data-structure';
 import { MutationService } from './services/mutation.service';
 import { CrossOverService } from './services/crossover.service';
 import { FitnessService } from './services/fitness.service';

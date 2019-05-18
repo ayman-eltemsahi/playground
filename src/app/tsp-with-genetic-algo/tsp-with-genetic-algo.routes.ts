@@ -1,6 +1,6 @@
 import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { TSPGAMainComponent } from './components/tspgamain.component';
+import { TSPGAMainComponent } from './components/tspga-main.component';
 
 export const tspGARoutes: Routes = [
     {

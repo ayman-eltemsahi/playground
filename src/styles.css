@@ -10,3 +10,7 @@
     line-height: 48px;
     margin: 0;
 }
+
+input[type='submit'] {
+    cursor: pointer;
+}

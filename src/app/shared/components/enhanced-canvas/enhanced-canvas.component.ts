@@ -59,6 +59,11 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         this.ctx.strokeStyle = style;
     }
 
+    addEventListener(eventName: string, fn: Function) {
+        // TODO: add removeEventListener automatically
+        this.canvas.nativeElement.addEventListener(eventName, fn);
+    }
+
     ngOnInit() {
         this.ctx = this.canvas.nativeElement.getContext("2d");
 

@@ -1,13 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { EnhancedCanvasComponent } from '../../../shared/components/enhanced-canvas/enhanced-canvas.component';
+import { Component, ViewChild } from '@angular/core';
 import { Cell } from '../../data-models/';
-import { RandomService } from '../../../shared/services/random.service';
+import { RandomService } from 'src/app/shared/services/random.service';
+import { LoopComponent } from 'src/app/shared/components/loop/loop.component';
+import { EnhancedCanvasComponent } from 'src/app/shared/components/enhanced-canvas/enhanced-canvas.component';
+import { SharedUtilityService } from 'src/app/shared/services/shared-utility.service';
 
 @Component({
     selector: 'app-astar-main',
     templateUrl: './astar-main.component.html'
 })
-export class AstarMainComponent implements OnInit {
+export class AstarMainComponent extends LoopComponent {
     @ViewChild(EnhancedCanvasComponent) canvas: EnhancedCanvasComponent;
 
     openSet: any[];
@@ -22,18 +24,9 @@ export class AstarMainComponent implements OnInit {
     obstacleRate: number = 20;
     state: string;
 
-    constructor(private ran: RandomService) {
-    }
-
-    ngOnInit() {
-
-        setTimeout(() => {
-            this.initialize();
-        }, 2);
-    }
-
-    start() {
-        this.initialize();
+    constructor(private ran: RandomService, private util: SharedUtilityService) {
+        super(true);
+        this.animationSpeed = 0;
     }
 
     initialize() {
@@ -59,39 +52,19 @@ export class AstarMainComponent implements OnInit {
         for (let i = 0; i < this.cols; i++) {
             for (let j = 0; j < this.rows; j++) {
                 this.addNeighbors(this.grid[i][j], this.grid);
-                this.grid[i][j].h = this.euclidean(this.grid[i][j], this.endCell);
+                this.grid[i][j].h = this.util.euclideanDistanceP(this.grid[i][j], this.endCell);
             }
         }
 
         this.draw();
         this.openSet.push(this.startCell);
         this.state = "searching...";
-        this.run();
-    }
-
-    addObstacles() {
-        for (let i = 0; i < this.cols; i++) {
-            for (let j = 0; j < this.rows; j++) {
-                if (this.ran.next() * 100 < this.obstacleRate / 4) {
-                    this.grid[i][j].isObstacle = true;
-                    if (this.ran.oneIn(2) && this.grid[i - 3]) {
-                        if (this.grid[i - 1][j]) this.grid[i - 1][j].isObstacle = true;
-                        if (this.grid[i - 2][j]) this.grid[i - 2][j].isObstacle = true;
-                        if (this.grid[i - 3][j]) this.grid[i - 3][j].isObstacle = true;
-                    } else {
-                        if (this.grid[i][j - 1]) this.grid[i][j - 1].isObstacle = true;
-                        if (this.grid[i][j - 2]) this.grid[i][j - 2].isObstacle = true;
-                        if (this.grid[i][j - 3]) this.grid[i][j - 3].isObstacle = true;
-                    }
-                }
-            }
-        }
     }
 
     run() {
         if (this.openSet.length === 0) {
-            this.state = "got stuck :(";
-            return false;
+            this.stop();
+            return;
         }
 
         let lowestIndex = 0;
@@ -102,11 +75,8 @@ export class AstarMainComponent implements OnInit {
 
         let current = this.openSet[lowestIndex];
         if (current === this.endCell) {
-            this.draw(current);
-            this.drawPath(current, "blue");
-            console.log('found path...');
-            this.state = "found a path :)";
-            return true;
+            this.stop();
+            return;
         }
 
         this.closedSet.push(current);
@@ -114,9 +84,8 @@ export class AstarMainComponent implements OnInit {
         this.openSet = this.openSet.filter(x => x !== current);
         current.isOpen = false;
 
-        let neighbors = current.neighbors;
-        for (let i = 0; i < neighbors.length; i++) {
-            let neighbor = neighbors[i];
+        for (let i = 0; i < current.neighbors.length; i++) {
+            let neighbor = current.neighbors[i];
 
             if (!neighbor.isClosed) {
                 let tempg = current.g + 1;
@@ -139,13 +108,49 @@ export class AstarMainComponent implements OnInit {
 
         this.draw(current);
         this.drawPath(current, "blue");
-        setTimeout(() => {
-            this.run();
-        }, 1);
     }
 
+    finish() {
+        if (this.openSet.length === 0) {
+            this.state = "got stuck :(";
+        } else {
 
-    addNeighbors(cell: Cell, grid) {
+            let lowestIndex = 0;
+            for (let i = 0; i < this.openSet.length; i++) {
+                if (this.openSet[i].f < this.openSet[lowestIndex].f)
+                    lowestIndex = i;
+            }
+
+            let current = this.openSet[lowestIndex];
+            if (current === this.endCell) {
+                this.draw(current);
+                this.drawPath(current, "blue");
+                console.log('found path...');
+                this.state = "found a path :)";
+            }
+        }
+    }
+
+    private addObstacles() {
+        for (let i = 0; i < this.cols; i++) {
+            for (let j = 0; j < this.rows; j++) {
+                if (this.ran.next() * 400 < this.obstacleRate) {
+                    this.grid[i][j].isObstacle = true;
+                    if (this.ran.oneIn(2) && this.grid[i - 3]) {
+                        if (this.grid[i - 1][j]) this.grid[i - 1][j].isObstacle = true;
+                        if (this.grid[i - 2][j]) this.grid[i - 2][j].isObstacle = true;
+                        if (this.grid[i - 3][j]) this.grid[i - 3][j].isObstacle = true;
+                    } else {
+                        if (this.grid[i][j - 1]) this.grid[i][j - 1].isObstacle = true;
+                        if (this.grid[i][j - 2]) this.grid[i][j - 2].isObstacle = true;
+                        if (this.grid[i][j - 3]) this.grid[i][j - 3].isObstacle = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private addNeighbors(cell: Cell, grid) {
         this.add(cell.x - 1, cell.y, cell);
         this.add(cell.x + 1, cell.y, cell);
         this.add(cell.x, cell.y - 1, cell);
@@ -160,11 +165,11 @@ export class AstarMainComponent implements OnInit {
         return cell;
     };
 
-    add(a: number, b: number, cell: Cell) {
+    private add(a: number, b: number, cell: Cell) {
         if (this.valid(a, b) && !this.grid[a][b].isObstacle) cell.neighbors.push(this.grid[a][b]);
     }
 
-    draw(current: Cell = void 0) {
+    private draw(current: Cell = void 0) {
         let i1, j1, i2, j2;
         if (current) {
             i1 = Math.max(0, current.x - 10); i2 = Math.min(this.cols, current.x + 10);
@@ -190,27 +195,20 @@ export class AstarMainComponent implements OnInit {
         }
     }
 
-    drawPath(node: Cell, color: string) {
+    private drawPath(node: Cell, color: string) {
         while (node) {
             this.drawRect(color, node.x, node.y);
             node = node.cameFrom;
         }
     }
 
-    drawRect(color: string, i: number, j: number) {
+    private drawRect(color: string, i: number, j: number) {
         this.canvas.fillStyle = color;
         this.canvas.rectangle(i, j, Math.min(this.width, this.height) / this.cols);
     }
 
-    valid(x: number, y: number) {
+    private valid(x: number, y: number) {
         return x >= 0 && y >= 0 && x < this.cols && y < this.rows;
     }
 
-    euclidean(a: Cell, b: Cell) {
-        return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
-    }
-
-    manhattan(a: { x: number; y: number; }, b: { x: number; y: number; }) {
-        return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
-    }
 }

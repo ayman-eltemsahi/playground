@@ -21,40 +21,36 @@ import { EnhancedCanvasComponent } from '../../shared/components/enhanced-canvas
 export class TSPGAMainComponent extends LoopComponent {
     @ViewChild(EnhancedCanvasComponent) canvas: EnhancedCanvasComponent;
 
-    cities: City[];
-    population: Population;
     width: number = 875;
     height: number = 875;
 
-    stopAfter: number = 200;
+    stopAfter: number = config.stopAfter;
+    numberOfCities: number = config.numberOfCities;
+    populationSize: number = config.populationSize;
+    mutationRate: number = config.mutationRate;
     bestGeneration: number = -1;
 
-    populationSize: number;
-    numberOfCities: number;
-    mutationRate: number;
+    private cities: City[];
+    private population: Population;
 
-    bestGene: Chromosome;
-    bestLocalGene: Chromosome;
-    bestFitness: number = 0;
-    bestLocalFitness: number;
-    currentGeneration: number = 0;
-    lastFitnessCount: number;
+    private bestGene: Chromosome;
+    private bestLocalGene: Chromosome;
+    private bestFitness: number = 0;
+    private bestLocalFitness: number;
+    private lastFitnessCount: number;
 
     constructor(private title: Title,
-        private crossOver: CrossOverService,
         private rnd: RandomService,
+        private util: UtilityService,
         private fitness: FitnessService,
         private mutation: MutationService,
         private distance: DistanceService,
         private selection: SelectionService,
-        private util: UtilityService
+        private crossOver: CrossOverService
     ) {
         super(true);
         this.animationSpeed = 0;
         this.title.setTitle("TSP with Genetic Algorithm");
-        this.populationSize = config.populationSize;
-        this.numberOfCities = config.numberOfCities;
-        this.mutationRate = config.mutationRate;
     }
 
     initialize() {
@@ -62,7 +58,6 @@ export class TSPGAMainComponent extends LoopComponent {
         this.bestLocalGene = undefined;
         this.bestFitness = 0;
         this.bestLocalFitness = 0;
-        this.currentGeneration = 0;
         this.lastFitnessCount = 0;
         this.mutation.count = 0;
         this.bestGeneration = -1;
@@ -70,7 +65,7 @@ export class TSPGAMainComponent extends LoopComponent {
         this.mutation.setMutationRate(this.mutationRate);
 
         this.cities = [];
-        let order = [];
+        const order = [];
 
         for (let i = 0; i < this.numberOfCities; i++) {
             this.cities[i] = new City(this.rnd.next(10, this.width - 10), this.rnd.next(10, this.height - 10));
@@ -81,20 +76,15 @@ export class TSPGAMainComponent extends LoopComponent {
 
         this.population = new Population();
         for (let i = 0; i < this.populationSize; i++) {
-            let chromosome = new Chromosome();
+            const chromosome = new Chromosome();
             chromosome.genes = this.util.shuffleArray(order.map(x => new Gene(x)));
             this.population.push(chromosome);
         }
+
+        this.calculateFitness();
     }
 
     run() {
-        this.calculateFitness();
-        this.runGeneration();
-    }
-
-    private runGeneration() {
-        this.currentGeneration++;
-
         const newPopulation = new Population();
         if (this.bestGene) {
             newPopulation.push(this.bestGene.clone());
@@ -118,6 +108,7 @@ export class TSPGAMainComponent extends LoopComponent {
         }
 
         this.population = newPopulation;
+        this.calculateFitness();
     }
 
     private calculateFitness() {
@@ -140,31 +131,31 @@ export class TSPGAMainComponent extends LoopComponent {
         if (this.bestFitness < this.bestLocalFitness) {
             this.bestFitness = this.bestLocalFitness;
             this.bestGene = this.bestLocalGene;
-            this.bestGeneration = this.currentGeneration;
-            this.draw(this.cities, this.bestGene.genes.map(x => x.value));
+            this.bestGeneration = this.cycle;
             this.lastFitnessCount = 1;
+            this.draw();
         } else {
             this.lastFitnessCount++;
 
-            if (this.lastFitnessCount >= this.stopAfter) {
-                this.isRunning = false;
+            if (this.lastFitnessCount > this.stopAfter) {
+                this.stop();
             }
         }
     }
 
-    private draw(cities: City[], order: number[]) {
+    private draw() {
+        const order: number[] = this.bestGene.genes.map(x => x.value);
         this.canvas.clear();
         this.canvas.font = '14px serif';
 
         this.canvas.strokeStyle = 'green';
-        cities.forEach(city => {
+        this.cities.forEach(city => {
             this.canvas.circle(city.x, city.y, 2);
         });
 
         this.canvas.strokeStyle = 'blue';
 
-        let points = order.map(i => <Point>cities[i]);
-
+        const points: Point[] = order.map(i => this.cities[i]);
         this.canvas.polygon(points, { closePolygon: true })
     }
 }

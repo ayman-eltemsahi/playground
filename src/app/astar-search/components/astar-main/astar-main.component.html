@@ -3,7 +3,7 @@
 </div>
 <div class="col-sm-4">
     <input type='submit' class='btn btn-success btn-sm' (click)="start()" [disabled]='isRunning' value='Run'>
-    <input type='submit' class='btn btn-danger btn-sm' (click)="start()" [disabled]='!isRunning' value='Stop'>
+    <input type='submit' class='btn btn-danger btn-sm' (click)="forceStop()" [disabled]='!isRunning' value='Stop'>
 
     <div class="form-group row">
         <label class="col-sm-7 col-form-label" for="cols">Columns:</label>
@@ -24,14 +24,6 @@
         <div class="col-sm-5">
             <input class='form-control' step='1' min='0' max='100' type="number" name="obstacleRate" id="obstacleRate"
                 [(ngModel)]='obstacleRate' [disabled]="isRunning">
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label class="col-sm-7 col-form-label" for="stopAfter">Stop after:</label>
-        <div class="col-sm-5">
-            <input class='form-control' type="number" name="stopAfter" id="stopAfter" [(ngModel)]='stopAfter'
-                [disabled]="isRunning">
         </div>
     </div>
 

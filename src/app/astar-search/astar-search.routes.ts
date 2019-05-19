@@ -6,8 +6,7 @@ export const astarSearchRoutes: Routes = [
     {
         path: '',
         component: AstarMainComponent,
-        pathMatch: 'full',
-        // children: []
+        pathMatch: 'full'
     }
 ];
 export const AStarSearchRouting: ModuleWithProviders = RouterModule.forChild(astarSearchRoutes);

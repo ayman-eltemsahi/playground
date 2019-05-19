@@ -20,11 +20,9 @@ export class KnnClusteringMainComponent extends LoopComponent {
     input: {
         points: number,
         clusters: number,
-        cycle: number,
     } = {
             clusters: config.numberOfClusters,
-            points: config.numberOfPoints,
-            cycle: 0
+            points: config.numberOfPoints
         };
 
     width: number = 875;
@@ -46,7 +44,6 @@ export class KnnClusteringMainComponent extends LoopComponent {
 
     initialize() {
         this.finished = false;
-        this.input.cycle = 0;
         this.points = this.rnd.randomPoints(this.input.points, 10, this.width - 10, 10, this.height - 10);
 
         this.clusters = [];
@@ -55,11 +52,10 @@ export class KnnClusteringMainComponent extends LoopComponent {
             this.clusters[i].center = this.rnd.randomPoint(10, this.width - 10, 10, this.height - 10);
         }
         this.evaluatePoints();
+        this.draw();
     }
 
     run() {
-        this.input.cycle++;
-        this.draw();
         this.isRunning = false;
         this.clusters.forEach(cluster => {
             const diff = this.calculateCenter(cluster);
@@ -70,7 +66,6 @@ export class KnnClusteringMainComponent extends LoopComponent {
     }
 
     finish() {
-        this.isRunning = false;
         this.finished = true;
     }
 
@@ -105,7 +100,7 @@ export class KnnClusteringMainComponent extends LoopComponent {
         let bestCluster = this.clusters[0];
         let bestDistance = Number.MAX_VALUE;
         this.clusters.forEach(cluster => {
-            const distance = this.util.distancePoint(cluster.center, point);
+            const distance = this.util.euclideanDistanceP(cluster.center, point);
             if (distance < bestDistance) {
                 bestDistance = distance;
                 bestCluster = cluster;

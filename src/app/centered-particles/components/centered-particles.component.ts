@@ -48,12 +48,14 @@ export class CenteredParticlesMainComponent extends LoopComponent {
 
     ngOnInit() {
         this.canvas.addEventListener("mousemove", e => {
-            this.mouse.x = e.x;
+            const offset = this.canvas.offset;
+            this.mouse.x = (e.x - offset.left) / this.canvas.xFactor;
             this.mouse.y = e.y;
         });
     }
 
     initialize() {
+        this.particles = [];
         for (let i = 0; i < 100; i++)this.addParticle();
         this.draw();
     }
@@ -65,10 +67,6 @@ export class CenteredParticlesMainComponent extends LoopComponent {
         }
 
         this.draw();
-    }
-
-    finish() {
-
     }
 
     applyForce(particle: Particle) {

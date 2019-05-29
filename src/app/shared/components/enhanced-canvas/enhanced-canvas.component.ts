@@ -4,7 +4,7 @@ import { Point, Shape } from '../../data-models/';
 @Component({
     selector: 'enhanced-canvas',
     templateUrl: 'enhanced-canvas.component.html',
-    styleUrls: ['enhanced-canvas.component.html']
+    styleUrls: ['enhanced-canvas.component.css']
 })
 export class EnhancedCanvasComponent implements OnInit, OnDestroy {
 
@@ -16,7 +16,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
 
     get width() { return this.actualWidth; }
     get height() { return this.actualHeight; }
-    private get xFactor() {
+      get xFactor() {
         return this.actualWidth / this.originalWidth;
     }
     private get yFactor() {
@@ -41,6 +41,14 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         this.haveMemory = true;
         this.preventResizeChange = true;
         setTimeout(() => this.preventResizeChange = false, 100);
+    }
+
+    get offset() {
+        const rect = this.canvas.nativeElement.getBoundingClientRect();
+        return {
+            left: rect.left ,//* this.xFactor,
+            top: rect.top
+        };
     }
 
     set font(font: string) {

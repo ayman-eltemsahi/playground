@@ -4,10 +4,12 @@ import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { RandomService } from './services/random.service';
 import { EnhancedCanvasComponent } from './components/enhanced-canvas/enhanced-canvas.component';
 import { SharedUtilityService } from './services/shared-utility.service';
+import { MathService } from './services/math.service';
 
 let providers = [
     RandomService,
-    SharedUtilityService
+    SharedUtilityService,
+    MathService
 ];
 
 let declarations = [

@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Point } from '../data-models';
 
 @Injectable()
 export class SharedUtilityService {
 
-    public euclideanDistanceP(point1: Point, point2: Point) {
+    public euclideanDistanceP(point1: { x: number, y: number }, point2: { x: number, y: number }) {
         return this.euclideanDistance(point1.x, point1.y, point2.x, point2.y);
     }
 
-    public manhattanDistanceP(point1: Point, point2: Point) {
+    public manhattanDistanceP(point1: { x: number, y: number }, point2: { x: number, y: number }) {
         return this.manhattanDistance(point1.x, point1.y, point2.x, point2.y);
     }
 

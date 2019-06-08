@@ -18,6 +18,10 @@ const routes: Routes = [
   {
     path: 'knn-clustering',
     loadChildren: './knn-clustering/knn-clustering.module#KNNClusteringModule'
+  },
+  {
+    path: 'centered-particles',
+    loadChildren: './centered-particles/centered-particles.module#CenteredParticlesModule'
   }
 ];
 

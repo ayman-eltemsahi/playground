@@ -4,6 +4,8 @@ import { RandomService } from 'src/app/shared/services/random.service';
 import { LoopComponent } from 'src/app/shared/components/loop/loop.component';
 import { EnhancedCanvasComponent } from 'src/app/shared/components/enhanced-canvas/enhanced-canvas.component';
 import { SharedUtilityService } from 'src/app/shared/services/shared-utility.service';
+import { AStarConfiguration as config } from '../../configuration/astar-main.configuration';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-astar-main',
@@ -15,17 +17,18 @@ export class AstarMainComponent extends LoopComponent {
     openSet: any[];
     closedSet: any[];
     grid: Cell[][];
-    cols: number = 500;
-    rows: number = 500;
+    cols: number = config.cols;
+    rows: number = config.rows;
     startCell: Cell;
     endCell: Cell;
     width = 900;
     height = 800;
-    obstacleRate: number = 20;
+    obstacleRate: number = config.obstacleRate;
     state: string;
 
-    constructor(private ran: RandomService, private util: SharedUtilityService) {
+    constructor(private title: Title, private ran: RandomService, private util: SharedUtilityService) {
         super(true);
+        this.title.setTitle("A Star Search");
         this.animationSpeed = 0;
     }
 
@@ -204,7 +207,8 @@ export class AstarMainComponent extends LoopComponent {
 
     private drawRect(color: string, i: number, j: number) {
         this.canvas.fillStyle = color;
-        this.canvas.rectangle(i, j, Math.min(this.width, this.height) / this.cols);
+        const scale = Math.min(this.width, this.height) / this.cols;
+        this.canvas.rectangle(i * scale, j * scale, scale);
     }
 
     private valid(x: number, y: number) {

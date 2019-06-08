@@ -1,7 +1,7 @@
-import { AfterViewInit } from '@angular/core';
+import { AfterViewInit, OnDestroy } from '@angular/core';
 
 
-export class LoopComponent implements AfterViewInit {
+export class LoopComponent implements AfterViewInit, OnDestroy {
 
     cycle: number = 0;
     isRunning: boolean = false;
@@ -9,6 +9,7 @@ export class LoopComponent implements AfterViewInit {
 
     private automaticStart: boolean;
     private _forceStop: boolean = false;
+    private _timeout: any;
 
     constructor(_automaticStart?: boolean) {
         this.automaticStart = _automaticStart;
@@ -16,7 +17,7 @@ export class LoopComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         if (this.automaticStart === true) {
-            setTimeout(() => this.start(), 2);
+            this._timeout = setTimeout(() => this.start(), 2);
         }
     }
 
@@ -58,9 +59,13 @@ export class LoopComponent implements AfterViewInit {
         this.cycle++;
         this.run();
         if (this.isRunning) {
-            setTimeout(() => this._runCycle(), this.animationSpeed);
+            this._timeout = setTimeout(() => this._runCycle(), this.animationSpeed);
         } else {
             this.finish();
         }
+    }
+
+    ngOnDestroy() {
+        clearTimeout(this._timeout);
     }
 }

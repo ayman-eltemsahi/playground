@@ -16,7 +16,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
 
     get width() { return this.actualWidth; }
     get height() { return this.actualHeight; }
-      get xFactor() {
+    get xFactor() {
         return this.actualWidth / this.originalWidth;
     }
     private get yFactor() {
@@ -35,6 +35,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     private resizeHandler;
 
     private images = [];
+    private eventListeners: { eventName: string, fn: any }[] = [];
 
     constructor() {
         this.intervalBetweenWithUpdates = 10;
@@ -46,7 +47,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     get offset() {
         const rect = this.canvas.nativeElement.getBoundingClientRect();
         return {
-            left: rect.left ,//* this.xFactor,
+            left: rect.left,
             top: rect.top
         };
     }
@@ -68,8 +69,17 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
     }
 
     addEventListener(eventName: string, fn: Function) {
-        // TODO: add removeEventListener automatically
+        this.eventListeners.push({ eventName, fn })
         this.canvas.nativeElement.addEventListener(eventName, fn);
+    }
+
+    onMouseMove(fn: Function) {
+        this.addEventListener('mousemove', e => {
+            const offset = this.offset;
+            const x = (e.x - offset.left) / this.xFactor;
+            const y = e.y - offset.top;
+            fn({ x, y });
+        });
     }
 
     ngOnInit() {
@@ -101,7 +111,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
                 strokeStyle: this.ctx.strokeStyle,
             });
         }
-        this.ctx.fillRect(x * size * this.xFactor, y * size, size, size);
+        this.ctx.fillRect(x * this.xFactor, y, size, size);
     }
 
     circle(x: number, y: number, r: number) {
@@ -117,6 +127,7 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         }
         this.ctx.beginPath();
         this.ctx.arc(x * this.xFactor, y, r, 0, 2 * Math.PI);
+        this.ctx.fill();
         this.ctx.stroke();
     }
 
@@ -206,5 +217,8 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         window.removeEventListener('resize', this.resizeHandler);
+        this.eventListeners.forEach(listener => {
+            window.removeEventListener(listener.eventName, listener.fn);
+        })
     }
 }

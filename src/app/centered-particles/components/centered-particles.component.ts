@@ -8,13 +8,11 @@ import { CenteredParticlesConfiguration as config } from '../configuration/cente
 import { EnhancedCanvasComponent } from '../../shared/components/enhanced-canvas/enhanced-canvas.component';
 import { LoopComponent } from 'src/app/shared/components/loop/loop.component';
 import { Particle } from '../data-models';
-import { MathService } from 'src/app/shared/services/math.service';
-
-let add, sub, mult, div;
 
 @Component({
     selector: 'centered-particles',
-    templateUrl: 'centered-particles.component.html'
+    templateUrl: 'centered-particles.component.html',
+    styleUrls: ['centered-particles.component.css']
 })
 export class CenteredParticlesMainComponent extends LoopComponent {
     @ViewChild(EnhancedCanvasComponent) canvas: EnhancedCanvasComponent;
@@ -23,34 +21,30 @@ export class CenteredParticlesMainComponent extends LoopComponent {
     height: number = 875;
 
     finished: boolean = false;
-    friction: number = 0.98;
+    friction: number = config.friction;
     limit: number = 50;
-    mouseRange: number = 100;
+    mouseRange: number = config.mouseRange;
 
     particles: Particle[] = [];
 
-    mouse: Vector = new Vector();
+    mouse: Vector = null;
 
     constructor(private title: Title,
         private rnd: RandomService,
-        private util: SharedUtilityService,
-        private math: MathService
+        private util: SharedUtilityService
     ) {
         super(true);
         this.title.setTitle("Centered Particles");
         this.animationSpeed = 0;
-
-        add = this.math.addVector;
-        sub = this.math.subVector;
-        mult = this.math.multVector;
-        div = this.math.divVector;
     }
 
     ngOnInit() {
-        this.canvas.addEventListener("mousemove", e => {
-            const offset = this.canvas.offset;
-            this.mouse.x = (e.x - offset.left) / this.canvas.xFactor;
-            this.mouse.y = e.y;
+        this.canvas.onMouseMove(mouseLocation => {
+            this.mouse = new Vector(mouseLocation.x, mouseLocation.y);
+        });
+
+        this.canvas.addEventListener("mouseleave", () => {
+            this.mouse = null;
         });
     }
 
@@ -70,21 +64,22 @@ export class CenteredParticlesMainComponent extends LoopComponent {
     }
 
     applyForce(particle: Particle) {
-        particle.acc = mult(particle.acc, 0);
-        particle.acc = div(add(particle.acc, sub(particle.start, particle.pos)), 400);
+        particle.acc = Vector.zero
+            .add(particle.start.sub(particle.pos))
+            .div(400);
 
-        if (this.util.euclideanDistanceP(particle.pos, this.mouse) < this.mouseRange) {
-            particle.acc = add(particle.acc, sub(particle.pos, this.mouse));
-            particle.acc = div(particle.acc, 400);
-            particle.acc = mult(particle.acc, 5);
+        if (this.mouse && this.util.euclideanDistanceP(particle.pos, this.mouse) < this.mouseRange) {
+            particle.acc = particle.acc.add(particle.pos.sub(this.mouse))
+                .div(400)
+                .mult(5);
         }
     }
 
     update(particle: Particle) {
-        particle.vel = mult(particle.vel, this.friction);
+        particle.vel = particle.vel.mult(1 - this.friction);
 
-        particle.pos = add(particle.pos, particle.vel);
-        particle.vel = add(particle.vel, particle.acc);
+        particle.pos = particle.pos.add(particle.vel);
+        particle.vel = particle.vel.add(particle.acc);
 
         // particle.vel = limit(particle.vel, limit);
         // particle.acc = limit(particle.acc, limit);
@@ -105,7 +100,14 @@ export class CenteredParticlesMainComponent extends LoopComponent {
 
         this.particles.forEach(particle => {
             this.canvas.strokeStyle = particle.color;
+            this.canvas.fillStyle = particle.color;
             this.canvas.circle(particle.pos.x, particle.pos.y, 4);
         });
+
+        if (this.mouse) {
+            this.canvas.strokeStyle = 'black';
+            this.canvas.fillStyle = 'black';
+            this.canvas.rectangle(this.mouse.x, this.mouse.y, 20);
+        }
     }
 }

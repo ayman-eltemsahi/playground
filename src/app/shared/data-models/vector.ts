@@ -8,6 +8,33 @@ export class Vector {
         this.y = _y;
     }
 
+    public static get zero(): Vector {
+        return new Vector(0, 0);
+    }
+
+    public add(other: Vector | number): Vector {
+        if (typeof other === "number")
+            return new Vector(this.x + other, this.y + other);
+        return new Vector(this.x + other.x, this.y + other.y);
+    }
+
+    public sub(other: Vector | number): Vector {
+        if (typeof other === "number")
+            return this.add(-other);
+        return new Vector(this.x - other.x, this.y - other.y);
+    }
+
+    public mult(other: Vector | number): Vector {
+        if (typeof other === "number")
+            return new Vector(this.x * other, this.y * other);
+        return new Vector(this.x * other.x, this.y * other.y);
+    }
+
+    public div(other: Vector | number): Vector {
+        if (typeof other === "number")
+            return new Vector(this.x / other, this.y / other);
+        return new Vector(this.x / other.x, this.y / other.y);
+    }
 }
 
 export class Vector3D {

@@ -19,7 +19,7 @@ export class Chromosome {
     }
 
     public clone() {
-        let other = new Chromosome();
+        const other = new Chromosome();
         for (let i = 0; i < this.genes.length; i++) {
             other.genes.push(this.genes[i].clone());
         }
@@ -29,7 +29,7 @@ export class Chromosome {
     };
 
     public swap(indexA: number, indexB: number) {
-        let tmp = this.genes[indexA];
+        const tmp = this.genes[indexA];
         this.genes[indexA] = this.genes[indexB];
         this.genes[indexB] = tmp;
     }

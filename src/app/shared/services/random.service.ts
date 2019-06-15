@@ -32,7 +32,6 @@ export class RandomService {
     }
 
     public next(min?: number, max?: number): number {
-
         if (typeof min !== 'number' && typeof max !== 'number') {
             return this.getNextRandom();
         }

@@ -13,10 +13,9 @@ export class SelectionService {
 
     normalizeFitness(population: Population) {
         this.normalizedFitness = [];
+        const total = population.chromosomes.reduce((prev, cur) => prev + cur.fitness, 0);
+        const n = population.chromosomes.length;
 
-        let total = population.chromosomes.reduce((prev, cur) => prev + cur.fitness, 0);
-
-        let n = population.chromosomes.length;
         for (let i = 0; i < n; i++) {
             this.normalizedFitness.push(population.chromosomes[i].fitness / total);
         }
@@ -27,12 +26,9 @@ export class SelectionService {
     }
 
     tournament(population: Population): Chromosome {
-
-        let pool = [];
-
-        let n = population.length;
+        const pool = [], n = population.length;
         for (let i = 0; i < n / 10; i++) {
-            let index = this.rnd.next(n);
+            const index = this.rnd.next(n);
             pool.push(population.chromosomes[index]);
         }
         pool.sort((a, b) => b.fitness - a.fitness);
@@ -40,9 +36,9 @@ export class SelectionService {
     }
 
     roulette(population: Population): Chromosome {
-        var r = this.rnd.next();
+        const r = this.rnd.next();
 
-        var lo = 0, hi = population.length - 1, md;
+        let lo = 0, hi = population.length - 1, md;
         while (hi - lo > 0) {
             md = Math.floor((lo + hi) / 2);
             if (this.normalizedFitness[md] > r)

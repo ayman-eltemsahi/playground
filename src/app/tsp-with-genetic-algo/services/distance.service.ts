@@ -14,24 +14,24 @@ export class DistanceService {
     }
 
     public registerCities(cities: City[]) {
-        let n = cities.length;
+        const n = cities.length;
 
         this.numberOfCities = n;
         this.distanceTable = [];
-        let alldistances = [];
+        const allDistances = [];
 
         for (let i = 0; i < n; i++) {
             this.distanceTable.push([]);
             for (let j = 0; j < n; j++) {
-                let d = this.cityDistance(cities[i], cities[j]);
+                const d = this.cityDistance(cities[i], cities[j]);
                 this.distanceTable[i].push(d);
-                alldistances.push(d);
+                allDistances.push(d);
             }
         }
 
-        alldistances.sort((a, b) => b - a);
-        this._maxDistance = alldistances.slice(0, n + 1).reduce((a, b) => a + b, 0) + 1000;
-        }
+        allDistances.sort((a, b) => b - a);
+        this._maxDistance = allDistances.slice(0, n + 1).reduce((a, b) => a + b, 0) + 1000;
+    }
 
 
     public get MaxDistance(): number {

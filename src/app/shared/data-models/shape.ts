@@ -1,5 +1,6 @@
 export enum Shape {
     Circle,
     Rectangle,
-    Polygon
+    Polygon,
+    Text
 }

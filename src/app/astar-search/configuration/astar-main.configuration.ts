@@ -1,5 +1,5 @@
 export const AStarConfiguration = {
-    cols: 500,
-    rows: 500,
-    obstacleRate: 20
+    cols: 200,
+    rows: 200,
+    obstacleRate: 0.5
 }

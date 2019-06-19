@@ -116,6 +116,7 @@ export class AstarMainComponent extends LoopComponent {
     finish() {
         if (this.openSet.length === 0) {
             this.state = "got stuck :(";
+            super.start();
         } else {
 
             let lowestIndex = 0;
@@ -137,7 +138,7 @@ export class AstarMainComponent extends LoopComponent {
     private addObstacles() {
         for (let i = 0; i < this.cols; i++) {
             for (let j = 0; j < this.rows; j++) {
-                if (this.ran.next() * 400 < this.obstacleRate) {
+                if (this.ran.next() * 400 < this.obstacleRate * 100) {
                     this.grid[i][j].isObstacle = true;
                     if (this.ran.oneIn(2) && this.grid[i - 3]) {
                         if (this.grid[i - 1][j]) this.grid[i - 1][j].isObstacle = true;

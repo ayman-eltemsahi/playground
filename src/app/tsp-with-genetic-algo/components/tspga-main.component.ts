@@ -72,11 +72,7 @@ export class TSPGAMainComponent extends LoopComponent {
             order[i] = i;
         }
 
-        this.cities[0].desiredPriority = 10;
-        this.cities[1].desiredPriority = 100;
-        this.cities[2].desiredPriority = 5;
-        this.cities[3].desiredPriority = 10;
-        this.cities[4].desiredPriority = 20;
+        // this.cities[0].desiredPriority = 10;
 
         this.distance.registerCities(this.cities);
 

@@ -3,7 +3,7 @@
 My playground where I do fun stuff
 
 # Projects
-###- Algorithms:
+### - Algorithms:
 #### 1 - TSP with Genetic Algorithm
 A solution to The travelling salesman problem using genetic algorithm. The algorithm keeps working with generations of solutions to get to an optimal solution for the problem.
 The location of the cities is generated randomly every time.
@@ -26,7 +26,7 @@ Available parameters:
     - **No of Clusters**: the number of generated clusters.
     - **Number of cities**: the number of cities that the algorithm will cluster.
 
-###- Physics:
+### - Physics:
 #### 1 - Centered Particles
 Creates a space with a couple of points that have a center of gravity. The points will always try to move to their center while moving the mouse near them will repel them.
 Available parameters:

@@ -14,3 +14,7 @@
 input[type='submit'] {
     cursor: pointer;
 }
+
+.m-l-5 {
+    margin-left: 5px;
+}

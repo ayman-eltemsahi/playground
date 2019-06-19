@@ -3,8 +3,11 @@
         <enhanced-canvas id='a-star-canvas' [width]='width' [height]='height'></enhanced-canvas>
     </div>
     <div class="col-sm-4">
-        <input type='submit' class='btn btn-success btn-sm' (click)="start()" [disabled]='isRunning' value='Run'>
-        <input type='submit' class='btn btn-danger btn-sm' (click)="forceStop()" [disabled]='!isRunning' value='Stop'>
+        <h4><a href="https://github.com/ayman-eltemsahi/playground/tree/master/src/app/astar-search"
+                target="_blank">Source Code</a></h4>
+        <br>
+        <input type='submit' class='btn btn-success' (click)="start()" [disabled]='isRunning' value='Run'>
+        <input type='submit' class='btn btn-danger m-l-5' (click)="forceStop()" [disabled]='!isRunning' value='Stop'>
 
         <div class="form-group row">
             <label class="col-sm-7 col-form-label" for="cols">Columns:</label>

@@ -72,6 +72,8 @@ export class TSPGAMainComponent extends LoopComponent {
             order[i] = i;
         }
 
+        // this.cities[0].desiredPriority = 10;
+
         this.distance.registerCities(this.cities);
 
         this.population = new Population();
@@ -113,7 +115,7 @@ export class TSPGAMainComponent extends LoopComponent {
 
     private calculateFitness() {
         this.population.chromosomes.forEach(ch => {
-            ch.fitness = this.fitness.calculateFitness(ch);
+            ch.fitness = this.fitness.calculateFitness(ch, this.cities);
         });
 
         this.population.sort();
@@ -149,13 +151,17 @@ export class TSPGAMainComponent extends LoopComponent {
         this.canvas.font = '14px serif';
 
         this.canvas.strokeStyle = 'green';
-        this.cities.forEach(city => {
-            this.canvas.circle(city.x, city.y, 2);
+        this.cities.forEach((city, i) => {
+            this.canvas.circle(city.x, city.y, i == order[0] ? 10 : (city.desiredPriority > 0 ? 5 : 2));
+            if (city.desiredPriority > 0) {
+                var itsOrder = order.findIndex(o => o === i);
+                this.canvas.text(itsOrder + ' > ' + city.desiredPriority, city.x, city.y);
+            }
         });
 
         this.canvas.strokeStyle = 'blue';
 
         const points: Point[] = order.map(i => this.cities[i]);
-        this.canvas.polygon(points, { closePolygon: true })
+        this.canvas.polygon(points, { closePolygon: false })
     }
 }

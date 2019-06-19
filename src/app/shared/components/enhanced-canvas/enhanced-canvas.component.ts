@@ -114,6 +114,20 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
         this.ctx.fillRect(x * this.xFactor, y, size, size);
     }
 
+    text(text: string, x: number, y: number) {
+        if (this.haveMemory) {
+            this.images.push({
+                type: Shape.Text,
+                text: text,
+                x: x,
+                y: y,
+                fillStyle: this.ctx.fillStyle,
+                strokeStyle: this.ctx.strokeStyle,
+            });
+        }
+        this.ctx.fillText(text, x, y);
+    }
+
     circle(x: number, y: number, r: number) {
         if (this.haveMemory) {
             this.images.push({
@@ -200,6 +214,9 @@ export class EnhancedCanvasComponent implements OnInit, OnDestroy {
                         break;
                     case Shape.Polygon:
                         this.polygon(item.points, { closePolygon: item.closePolygon });
+                        break;
+                    case Shape.Text:
+                        this.text(item.text, item.x, item.y);
                         break;
 
                     default:

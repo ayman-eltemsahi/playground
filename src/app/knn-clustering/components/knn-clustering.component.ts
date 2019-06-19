@@ -38,8 +38,8 @@ export class KnnClusteringMainComponent extends LoopComponent {
         private util: SharedUtilityService
     ) {
         super(true);
-        this.title.setTitle("KNN Clustering");
-        this.animationSpeed = config.animationSpeed;
+        this.title.setTitle("K Nearest Neighbors Clustering");
+        this.animationSpeed = 10;
     }
 
     initialize() {

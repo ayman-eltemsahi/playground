@@ -11,7 +11,7 @@ export class AppComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit() {
-    this.router.navigate(['/tsp-ga']);
+    // this.router.navigate(['/tsp-ga']);
   }
 
 }

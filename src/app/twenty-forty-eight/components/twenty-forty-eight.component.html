@@ -1,0 +1,9 @@
+<h1>2048</h1>
+
+<div class="top-level">
+    <div class="cell-row" *ngFor='let i of [0, 1, 2, 3]'>
+        <div class="center cell" [ngClass]="{'empty': board[i][j]===0}" *ngFor='let j of [0, 1, 2, 3]'>
+            {{ board[i][j] }}
+        </div>
+    </div>
+</div>

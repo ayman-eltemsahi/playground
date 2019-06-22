@@ -22,6 +22,10 @@ const routes: Routes = [
   {
     path: 'centered-particles',
     loadChildren: './centered-particles/centered-particles.module#CenteredParticlesModule'
+  },
+  {
+    path: '2048',
+    loadChildren: './twenty-forty-eight/twenty-forty-eight.module#TwentyFortyEightModule'
   }
 ];
 

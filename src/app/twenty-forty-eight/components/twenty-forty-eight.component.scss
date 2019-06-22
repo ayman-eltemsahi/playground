@@ -1,0 +1,26 @@
+.top-level {
+
+    .cell-row {
+        width: 100%;
+        margin: 0px;
+    }
+
+    .cell {
+        text-align: center;
+        display: inline-block;
+        padding: 50px 0 50px 0;
+        width: 200px;
+        margin: 0px;
+        font-weight: bold;
+        color: #a67c00;
+        font-size: 35pt;
+        background-color: #eee4da;
+
+        border: 9px solid #bbada0;
+        // border-radius: 3px;
+    }
+
+    .empty.cell {
+        background-color: #cdc1b4;
+    }
+}
